@@ -23,8 +23,6 @@ Welcome to the **Contact Application API**! This API allows users to register, a
   - [7. Update Contact](#7-update-contact)
   - [8. Delete Contact](#8-delete-contact)
 - [Error Handling](#error-handling)
-- [Security Considerations](#security-considerations)
-- [License](#license)
 
 ---
 
@@ -484,17 +482,6 @@ The API uses standard HTTP status codes to indicate success or failure of API re
   "message": "Invalid email or password"
 }
 ```
-
----
-
-## Security Considerations
-
-- **JWT Secret:** Ensure that the `JWT_SECRET` is kept secure and is not exposed publicly.
-- **HTTPS:** Always use HTTPS in production to secure data in transit.
-- **Input Validation:** Validate and sanitize all user inputs to prevent injection attacks.
-- **Rate Limiting:** Implement rate limiting to protect against brute-force attacks.
-- **Password Storage:** Although the current implementation uses plaintext passwords (not recommended), consider using hashed passwords (e.g., bcrypt) for enhanced security.
-- **Sensitive Data Logging:** Avoid logging sensitive information such as passwords and tokens in production environments.
 
 ---
 
