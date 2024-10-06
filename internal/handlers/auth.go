@@ -26,12 +26,12 @@ func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify credentials against database
 	var user models.User
 	result := db.Where("email = ?", credentials.Email).First(&user)
+
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		} else {
 			http.Error(w, "Database error", http.StatusInternalServerError)
 		}
@@ -44,10 +44,9 @@ func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify password
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(credentials.Password))
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
@@ -65,8 +64,8 @@ func AuthenticateUser(w http.ResponseWriter, r *http.Request) {
 // Add this middleware
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Received request: %s %s", r.Method, r.URL.Path)
+		log.Println("Received request: ", r.Method, r.URL.Path)
 		next.ServeHTTP(w, r)
-		log.Printf("Finished processing request: %s %s", r.Method, r.URL.Path)
+		log.Println("Finished processing request: ", r.Method, r.URL.Path)
 	})
 }
