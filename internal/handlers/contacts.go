@@ -11,12 +11,27 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAllContacts(w http.ResponseWriter, r *http.Request) {
-	// Get user ID from the token
-	token := r.Header.Get("Authorization")
+// Helper function to extract user ID from Authorization header
+func getUserIDFromRequest(r *http.Request) (uint64, error) {
+	authHeader := r.Header.Get("Authorization")
+	token, err := utils.ExtractBearerToken(authHeader)
+	if err != nil {
+		return 0, err
+	}
+
 	userID, err := utils.GetUserIDFromToken(token)
 	if err != nil {
-		http.Error(w, "Failed to get user ID from token", http.StatusUnauthorized)
+		return 0, err
+	}
+
+	return userID, nil
+}
+
+func GetAllContacts(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from the token
+	userID, err := getUserIDFromRequest(r)
+	if err != nil {
+		http.Error(w, "Failed to get user ID from token: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
@@ -67,10 +82,9 @@ func CreateContact(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get user ID from the token
-	token := r.Header.Get("Authorization")
-	userID, err := utils.GetUserIDFromToken(token)
+	userID, err := getUserIDFromRequest(r)
 	if err != nil {
-		http.Error(w, "Failed to get user ID from token", http.StatusUnauthorized)
+		http.Error(w, "Failed to get user ID from token: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
@@ -94,10 +108,9 @@ func GetContactDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := r.Header.Get("Authorization")
-	userID, err := utils.GetUserIDFromToken(token)
+	userID, err := getUserIDFromRequest(r)
 	if err != nil {
-		http.Error(w, "Failed to get user ID from token", http.StatusUnauthorized)
+		http.Error(w, "Failed to get user ID from token: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
@@ -130,10 +143,9 @@ func UpdateContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := r.Header.Get("Authorization")
-	userID, err := utils.GetUserIDFromToken(token)
+	userID, err := getUserIDFromRequest(r)
 	if err != nil {
-		http.Error(w, "Failed to get user ID from token", http.StatusUnauthorized)
+		http.Error(w, "Failed to get user ID from token: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
@@ -170,10 +182,9 @@ func DeleteContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := r.Header.Get("Authorization")
-	userID, err := utils.GetUserIDFromToken(token)
+	userID, err := getUserIDFromRequest(r)
 	if err != nil {
-		http.Error(w, "Failed to get user ID from token", http.StatusUnauthorized)
+		http.Error(w, "Failed to get user ID from token: "+err.Error(), http.StatusUnauthorized)
 		return
 	}
 
